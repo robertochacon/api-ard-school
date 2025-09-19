@@ -12,6 +12,7 @@ class Enrollment extends Model
     protected $fillable = [
         'student_id',
         'course_id',
+        'session_id',
         'enrollment_date',
         'status',
         'notes',
@@ -20,6 +21,14 @@ class Enrollment extends Model
     protected $casts = [
         'enrollment_date' => 'date',
     ];
+
+    /**
+     * Get the session that owns the enrollment.
+     */
+    public function session()
+    {
+        return $this->belongsTo(Session::class);
+    }
 
     /**
      * Get the student that owns the enrollment.

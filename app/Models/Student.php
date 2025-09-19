@@ -17,7 +17,9 @@ class Student extends Model
         'parent_name',
         'parent_phone',
         'parent_email',
-        'emergency_contact',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+        'emergency_contact_email',
         'medical_info',
         'is_active',
     ];

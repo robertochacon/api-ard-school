@@ -18,6 +18,9 @@ class Teacher extends Model
         'qualification',
         'specialization',
         'office_location',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+        'emergency_contact_email',
         'is_active',
     ];
 

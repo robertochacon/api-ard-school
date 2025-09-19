@@ -12,6 +12,7 @@ class Grade extends Model
     protected $fillable = [
         'student_id',
         'course_id',
+        'session_id',
         'teacher_id',
         'assignment_name',
         'grade_value',
@@ -26,6 +27,14 @@ class Grade extends Model
         'max_grade' => 'decimal:2',
         'date_given' => 'date',
     ];
+
+    /**
+     * Get the session that owns the grade.
+     */
+    public function session()
+    {
+        return $this->belongsTo(Session::class);
+    }
 
     /**
      * Get the student that owns the grade.

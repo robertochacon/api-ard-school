@@ -27,7 +27,9 @@ class StudentSeeder extends Seeder
                 'parent_name' => $parentNames[array_rand($parentNames)],
                 'parent_phone' => '+1' . rand(2000000000, 9999999999),
                 'parent_email' => 'parent' . ($index + 1) . '@email.com',
-                'emergency_contact' => '+1' . rand(2000000000, 9999999999),
+                'emergency_contact_name' => 'Emergency Contact ' . $index,
+                'emergency_contact_phone' => '+1' . rand(2000000000, 9999999999),
+                'emergency_contact_email' => 'emergency' . ($index + 1) . '@email.com',
                 'medical_info' => rand(0, 1) ? 'No known allergies' : 'Allergic to peanuts',
                 'is_active' => true,
             ]);

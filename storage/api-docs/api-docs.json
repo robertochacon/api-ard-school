@@ -22,32 +22,126 @@
         }
     ],
     "paths": {
-        "/api/auth/login": {
+        "/api/asignaturas": {
+            "get": {
+                "tags": [
+                    "Asignaturas"
+                ],
+                "summary": "Obtiene la lista de Asignaturas.",
+                "operationId": "2d427742471a5cd10d43d7965334303d",
+                "parameters": [
+                    {
+                        "name": "nombre",
+                        "in": "query",
+                        "description": "Filtrar por Nombre de asignatura.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "docente",
+                        "in": "query",
+                        "description": "Filtrar por Docente asignado a la asignatura.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaturas obtenida exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_asignatura": {
+                                                "type": "string",
+                                                "example": "Matemáticas"
+                                            },
+                                            "docente": {
+                                                "type": "string",
+                                                "example": "Carlos Garcia"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Asignaturas"
                 ],
-                "summary": "User login",
-                "operationId": "8dcb70df1020986038d098cc08d05dae",
+                "summary": "Crea una nueva asignatura.",
+                "operationId": "f5befe794e764a502a9059dfec129ae5",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "email",
-                                    "password"
+                                    "name",
+                                    "code",
+                                    "credits",
+                                    "teacher_id",
+                                    "grade_level"
                                 ],
                                 "properties": {
-                                    "email": {
+                                    "name": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "admin@school.com"
+                                        "example": "Matemáticas"
                                     },
-                                    "password": {
+                                    "code": {
                                         "type": "string",
-                                        "format": "password",
-                                        "example": "password"
+                                        "example": "MAT101"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Curso introductorio a las matemáticas."
+                                    },
+                                    "credits": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "teacher_id": {
+                                        "description": "ID del docente que imparte la asignatura.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "grade_level": {
+                                        "type": "string",
+                                        "example": "10th Grade"
+                                    },
+                                    "schedule": {
+                                        "type": "string",
+                                        "example": "Lunes, Miércoles 10:00-11:30"
+                                    },
+                                    "room": {
+                                        "type": "string",
+                                        "example": "Aula 205"
+                                    },
+                                    "max_students": {
+                                        "type": "integer",
+                                        "example": 30
                                     }
                                 },
                                 "type": "object"
@@ -56,28 +150,25 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Login successful",
+                    "201": {
+                        "description": "Asignatura creada exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Login successful"
+                                            "example": "Asignatura created successfully"
                                         },
-                                        "data": {
+                                        "asignatura": {
                                             "properties": {
-                                                "user": {
-                                                    "$ref": "#/components/schemas/User"
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
-                                                "token": {
+                                                "nombre_asignatura": {
                                                     "type": "string",
-                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                                    "example": "Matemáticas"
                                                 }
                                             },
                                             "type": "object"
@@ -88,167 +179,8 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Invalid credentials",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid credentials"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/register": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "User registration",
-                "operationId": "d764dd091cc4494ae0baf360b03319f3",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "password",
-                                    "role"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "John Doe"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "john@school.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password"
-                                    },
-                                    "role": {
-                                        "type": "string",
-                                        "enum": [
-                                            "admin",
-                                            "teacher",
-                                            "student"
-                                        ],
-                                        "example": "student"
-                                    },
-                                    "phone": {
-                                        "type": "string",
-                                        "example": "+1234567890"
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "example": "123 Main St"
-                                    },
-                                    "date_of_birth": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "1990-01-01"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Registration successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User registered successfully"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/User"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
                     "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation error"
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/logout": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "User logout",
-                "operationId": "69281b12abb272c76871f19cb17ca563",
-                "responses": {
-                    "200": {
-                        "description": "Logout successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Successfully logged out"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Error de validación."
                     }
                 },
                 "security": [
@@ -258,26 +190,168 @@
                 ]
             }
         },
-        "/api/auth/me": {
-            "get": {
+        "/api/asignaturas/{id}": {
+            "put": {
                 "tags": [
-                    "Authentication"
+                    "Asignaturas"
                 ],
-                "summary": "Get current user",
-                "operationId": "b9abb1a7a74670a19c215c2c133f14d8",
+                "summary": "Permite editar una asignatura.",
+                "operationId": "96cff0fee053aaf9afda783d217f1536",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la asignatura a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Matemáticas Avanzadas"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "MAT101"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Curso avanzado de matemáticas."
+                                    },
+                                    "credits": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "teacher_id": {
+                                        "description": "ID del docente que imparte la asignatura.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "grade_level": {
+                                        "type": "string",
+                                        "example": "11th Grade"
+                                    },
+                                    "schedule": {
+                                        "type": "string",
+                                        "example": "Martes, Jueves 09:00-10:30"
+                                    },
+                                    "room": {
+                                        "type": "string",
+                                        "example": "Aula 301"
+                                    },
+                                    "max_students": {
+                                        "type": "integer",
+                                        "example": 25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "User information retrieved successfully",
+                        "description": "Asignatura actualizada exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "success"
+                                            "example": "Asignatura updated successfully"
                                         },
-                                        "data": {
-                                            "$ref": "#/components/schemas/User"
+                                        "asignatura": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_asignatura": {
+                                                    "type": "string",
+                                                    "example": "Matemáticas Avanzadas"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Asignatura no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Permite el acceso al sistema",
+                "operationId": "8dcb70df1020986038d098cc08d05dae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "correo_electronico",
+                                    "contrasena"
+                                ],
+                                "properties": {
+                                    "correo_electronico": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "contrasena": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": "3600"
                                         }
                                     },
                                     "type": "object"
@@ -291,11 +365,50 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
+                                        "error": {
                                             "type": "string",
-                                            "example": "error"
-                                        },
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar la sesión",
+                "operationId": "69281b12abb272c76871f19cb17ca563",
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
                                         "message": {
+                                            "type": "string",
+                                            "example": "Successfully logged out"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
                                             "type": "string",
                                             "example": "Unauthorized"
                                         }
@@ -584,57 +697,72 @@
                 ]
             }
         },
-        "/api/students": {
+        "/api/sesiones": {
             "get": {
                 "tags": [
-                    "Students"
+                    "Sesiones"
                 ],
-                "summary": "Get all students",
-                "operationId": "75378cfd9c3d128e0846de3d32b101ec",
+                "summary": "Obtiene la lista de Sesiones.",
+                "operationId": "9b4b4d87468265ce5c414289e2fc797b",
                 "parameters": [
                     {
-                        "name": "page",
+                        "name": "nombre",
                         "in": "query",
-                        "description": "Page number",
+                        "description": "Filtrar por Nombre de sesión.",
                         "required": false,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "string"
                         }
                     },
                     {
-                        "name": "per_page",
+                        "name": "docente",
                         "in": "query",
-                        "description": "Items per page",
+                        "description": "Filtrar por Docente principal de la sesión.",
                         "required": false,
                         "schema": {
-                            "type": "integer",
-                            "example": 15
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ano",
+                        "in": "query",
+                        "description": "Filtrar por Año de la sesión.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Students retrieved successfully",
+                        "description": "Lista de sesiones obtenida exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Student"
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_sesion": {
+                                                "type": "string",
+                                                "example": "Sesión 2023-2024"
+                                            },
+                                            "docente": {
+                                                "type": "string",
+                                                "example": "Carlos Garcia"
                                             }
-                                        }
-                                    },
-                                    "type": "object"
+                                        },
+                                        "type": "object"
+                                    }
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "No autorizado."
                     }
                 },
                 "security": [
@@ -645,59 +773,44 @@
             },
             "post": {
                 "tags": [
-                    "Students"
+                    "Sesiones"
                 ],
-                "summary": "Create a new student",
-                "operationId": "5e69d562cd0a6141ac0ffdd5a921d62b",
+                "summary": "Crea una nueva sesión.",
+                "operationId": "7fe5593f14e25be3bc468d12d0b17776",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "user_id",
-                                    "student_id",
-                                    "grade_level",
-                                    "enrollment_date"
+                                    "name",
+                                    "year",
+                                    "start_date",
+                                    "end_date"
                                 ],
                                 "properties": {
-                                    "user_id": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sesión 2023-2024"
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "example": 2023
+                                    },
+                                    "teacher_id": {
+                                        "description": "ID del docente principal de la sesión.",
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "student_id": {
-                                        "type": "string",
-                                        "example": "STU001"
-                                    },
-                                    "grade_level": {
-                                        "type": "string",
-                                        "example": "10th Grade"
-                                    },
-                                    "enrollment_date": {
+                                    "start_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2024-01-01"
+                                        "example": "2023-09-01"
                                     },
-                                    "parent_name": {
+                                    "end_date": {
                                         "type": "string",
-                                        "example": "Jane Doe"
-                                    },
-                                    "parent_phone": {
-                                        "type": "string",
-                                        "example": "+1234567890"
-                                    },
-                                    "parent_email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "parent@email.com"
-                                    },
-                                    "emergency_contact": {
-                                        "type": "string",
-                                        "example": "+0987654321"
-                                    },
-                                    "medical_info": {
-                                        "type": "string",
-                                        "example": "No known allergies"
+                                        "format": "date",
+                                        "example": "2024-06-30"
                                     }
                                 },
                                 "type": "object"
@@ -707,21 +820,27 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Student created successfully",
+                        "description": "Sesión creada exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Student created successfully"
+                                            "example": "Session created successfully"
                                         },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Student"
+                                        "sesion": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_sesion": {
+                                                    "type": "string",
+                                                    "example": "Sesión 2023-2024"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -730,7 +849,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Error de validación."
                     }
                 },
                 "security": [
@@ -740,38 +859,82 @@
                 ]
             }
         },
-        "/api/students/{id}": {
-            "get": {
+        "/api/sesiones/{id}": {
+            "put": {
                 "tags": [
-                    "Students"
+                    "Sesiones"
                 ],
-                "summary": "Get student by ID",
-                "operationId": "00eebadc92fc1451e63b944dc236ce5e",
+                "summary": "Actualiza la información general de la sesión.",
+                "operationId": "259a6fa72dd49782ad18013312f045db",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Student ID",
+                        "description": "ID de la sesión a actualizar.",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "integer"
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sesión 2024-2025"
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "example": 2024
+                                    },
+                                    "teacher_id": {
+                                        "description": "ID del docente principal de la sesión.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-09-01"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-06-30"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Student retrieved successfully",
+                        "description": "Sesión actualizada exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "success"
+                                            "example": "Session updated successfully"
                                         },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Student"
+                                        "sesion": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_sesion": {
+                                                    "type": "string",
+                                                    "example": "Sesión 2024-2025"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -780,7 +943,67 @@
                         }
                     },
                     "404": {
-                        "description": "Student not found"
+                        "description": "Sesión no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sesiones/{id}/asignaturas": {
+            "get": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Lista las asignaturas asociadas a la sesión.",
+                "operationId": "0623dacbb86c97730b4e076b8f3d1dd8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignaturas de la sesión obtenidas exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_asignatura": {
+                                                "type": "string",
+                                                "example": "Matemáticas"
+                                            },
+                                            "docente": {
+                                                "type": "string",
+                                                "example": "Carlos Garcia"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión no encontrada."
                     }
                 },
                 "security": [
@@ -791,19 +1014,18 @@
             },
             "put": {
                 "tags": [
-                    "Students"
+                    "Sesiones"
                 ],
-                "summary": "Update student",
-                "operationId": "ab4663f1b3d03e5867d9dce3e8fa14a3",
+                "summary": "Permite agregar/eliminar asignaturas de la sesión.",
+                "operationId": "7c7206f2d6781145cc257ec1ed159ebe",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Student ID",
+                        "description": "ID de la sesión.",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "integer"
                         }
                     }
                 ],
@@ -812,35 +1034,17 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "asignaturas"
+                                ],
                                 "properties": {
-                                    "grade_level": {
-                                        "type": "string",
-                                        "example": "11th Grade"
-                                    },
-                                    "parent_name": {
-                                        "type": "string",
-                                        "example": "Jane Doe"
-                                    },
-                                    "parent_phone": {
-                                        "type": "string",
-                                        "example": "+1234567890"
-                                    },
-                                    "parent_email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "parent@email.com"
-                                    },
-                                    "emergency_contact": {
-                                        "type": "string",
-                                        "example": "+0987654321"
-                                    },
-                                    "medical_info": {
-                                        "type": "string",
-                                        "example": "No known allergies"
-                                    },
-                                    "is_active": {
-                                        "type": "boolean",
-                                        "example": true
+                                    "asignaturas": {
+                                        "type": "array",
+                                        "items": {
+                                            "description": "ID de la asignatura.",
+                                            "type": "integer",
+                                            "example": 1
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -850,21 +1054,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Student updated successfully",
+                        "description": "Asignaturas de la sesión actualizadas exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Student updated successfully"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Student"
+                                            "example": "Session assignments updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -873,7 +1070,72 @@
                         }
                     },
                     "404": {
-                        "description": "Student not found"
+                        "description": "Sesión no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sesiones/{id}/estudiantes": {
+            "get": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Lista los estudiantes matriculados en la sesión.",
+                "operationId": "0c945837e42ca984d26c111080412f71",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estudiantes de la sesión obtenidos exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_completo": {
+                                                "type": "string",
+                                                "example": "Juan Perez"
+                                            },
+                                            "fecha_de_nacimiento": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2000-01-01"
+                                            },
+                                            "padre_madre_o_tutor": {
+                                                "type": "string",
+                                                "example": "Maria Lopez"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión no encontrada."
                     }
                 },
                 "security": [
@@ -882,38 +1144,56 @@
                     }
                 ]
             },
-            "delete": {
+            "put": {
                 "tags": [
-                    "Students"
+                    "Sesiones"
                 ],
-                "summary": "Delete student",
-                "operationId": "ae8784bb4ca4b3b3614a7366dc0f5138",
+                "summary": "Permite agregar/eliminar estudiantes de la sesión.",
+                "operationId": "ad68ef6d53075a765fc052b67359f3e9",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Student ID",
+                        "description": "ID de la sesión.",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 1
+                            "type": "integer"
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estudiantes"
+                                ],
+                                "properties": {
+                                    "estudiantes": {
+                                        "type": "array",
+                                        "items": {
+                                            "description": "ID del estudiante.",
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Student deleted successfully",
+                        "description": "Estudiantes de la sesión actualizados exitosamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "success"
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Student deleted successfully"
+                                            "example": "Session students updated successfully"
                                         }
                                     },
                                     "type": "object"
@@ -922,7 +1202,1012 @@
                         }
                     },
                     "404": {
-                        "description": "Student not found"
+                        "description": "Sesión no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sesiones/{id}/calificaciones": {
+            "get": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Obtiene las calificaciones por estudiante y asignatura para la sesión.",
+                "operationId": "b891dd1e4ec399b859e19f983ebed226",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Calificaciones de la sesión obtenidas exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "student_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "student_name": {
+                                                "type": "string",
+                                                "example": "Juan Perez"
+                                            },
+                                            "course_id": {
+                                                "type": "integer",
+                                                "example": 101
+                                            },
+                                            "course_name": {
+                                                "type": "string",
+                                                "example": "Matemáticas"
+                                            },
+                                            "grades": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "assignment_name": {
+                                                            "type": "string",
+                                                            "example": "Examen Final"
+                                                        },
+                                                        "grade_value": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 95.5
+                                                        },
+                                                        "max_grade": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 100
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión no encontrada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Permite guardar las notas para el estudiante en la sesión.",
+                "operationId": "8bf5d87b0f53c587d2970035e756cf9f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "student_id",
+                                    "course_id",
+                                    "grades"
+                                ],
+                                "properties": {
+                                    "student_id": {
+                                        "description": "ID del estudiante.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "course_id": {
+                                        "description": "ID de la asignatura.",
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "grades": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "assignment_name": {
+                                                    "type": "string",
+                                                    "example": "Matematica"
+                                                },
+                                                "grade_value": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 90
+                                                },
+                                                "max_grade": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100
+                                                },
+                                                "grade_type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "homework",
+                                                        "quiz",
+                                                        "exam",
+                                                        "project",
+                                                        "participation"
+                                                    ],
+                                                    "example": "exam"
+                                                },
+                                                "date_given": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-05-20"
+                                                },
+                                                "comments": {
+                                                    "type": "string",
+                                                    "example": "Buen desempeño."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Calificaciones actualizadas exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Grades updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión, estudiante o asignatura no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/sesiones/{id}/asistencia": {
+            "get": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Obtiene el registro de asistencia para la sesión.",
+                "operationId": "6328f9eb9768801306257d778904d315",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Filtrar por mes (1-12).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 12,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Filtrar por día (1-31).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 31,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "course_id",
+                        "in": "query",
+                        "description": "Filtrar por ID de asignatura.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registro de asistencia obtenido exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "student_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "student_name": {
+                                                "type": "string",
+                                                "example": "Juan Perez"
+                                            },
+                                            "course_name": {
+                                                "type": "string",
+                                                "example": "Matemáticas"
+                                            },
+                                            "date": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-05-20"
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "present",
+                                                    "absent",
+                                                    "late",
+                                                    "excused"
+                                                ],
+                                                "example": "present"
+                                            },
+                                            "notes": {
+                                                "type": "string",
+                                                "example": "Llegó tarde."
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión no encontrada."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sesiones"
+                ],
+                "summary": "Permite registrar o actualizar el estado de asistencia para la sesión.",
+                "operationId": "94fe956bf3e5d62928baea83cc00feb7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la sesión.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "student_id",
+                                    "course_id",
+                                    "date",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "student_id": {
+                                        "description": "ID del estudiante.",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "course_id": {
+                                        "description": "ID de la asignatura.",
+                                        "type": "integer",
+                                        "example": 101
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-05-20"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "present",
+                                            "absent",
+                                            "late",
+                                            "excused"
+                                        ],
+                                        "example": "present"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Llegó tarde."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asistencia registrada/actualizada exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Attendance recorded/updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sesión, estudiante o asignatura no encontrada."
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/estudiantes": {
+            "get": {
+                "tags": [
+                    "Estudiantes"
+                ],
+                "summary": "Obtiene la lista de estudiantes con opciones de filtro y visualización.",
+                "operationId": "203351e8ece842d3a3513835b24ace25",
+                "parameters": [
+                    {
+                        "name": "nombre",
+                        "in": "query",
+                        "description": "Filtrar por Nombre completo del estudiante.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de estudiantes obtenida exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_completo": {
+                                                "type": "string",
+                                                "example": "Juan Perez"
+                                            },
+                                            "fecha_de_nacimiento": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2000-01-01"
+                                            },
+                                            "padre_madre_o_tutor": {
+                                                "type": "string",
+                                                "example": "Maria Lopez"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Estudiantes"
+                ],
+                "summary": "Crea un nuevo estudiante.",
+                "operationId": "b4c3d28d31f5b43c5b25573e1a10a98a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "identification_number",
+                                    "gender",
+                                    "date_of_birth",
+                                    "phone",
+                                    "address",
+                                    "parent_name",
+                                    "parent_phone",
+                                    "parent_email",
+                                    "emergency_contact_name",
+                                    "emergency_contact_phone",
+                                    "emergency_contact_email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Juan"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Perez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan.perez@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    },
+                                    "identification_number": {
+                                        "type": "string",
+                                        "example": "123-456789-0"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-05-10"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "123-456-7890"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Calle Falsa 123"
+                                    },
+                                    "parent_name": {
+                                        "type": "string",
+                                        "example": "Maria Lopez"
+                                    },
+                                    "parent_phone": {
+                                        "type": "string",
+                                        "example": "987-654-3210"
+                                    },
+                                    "parent_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "maria.lopez@example.com"
+                                    },
+                                    "emergency_contact_name": {
+                                        "type": "string",
+                                        "example": "Pedro Lopez"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "type": "string",
+                                        "example": "555-123-4567"
+                                    },
+                                    "emergency_contact_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "pedro.lopez@example.com"
+                                    },
+                                    "profile_image": {
+                                        "description": "Optional: Student's profile image",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "grade_level": {
+                                        "type": "string",
+                                        "example": "10th Grade"
+                                    },
+                                    "enrollment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-09-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Estudiante creado exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Student created successfully"
+                                        },
+                                        "student": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_completo": {
+                                                    "type": "string",
+                                                    "example": "Juan Perez"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/docentes": {
+            "get": {
+                "tags": [
+                    "Docentes"
+                ],
+                "summary": "Obtiene la lista de docentes con opciones de filtro.",
+                "operationId": "58c30b07fcdcd5cfe6dcb704e523a33c",
+                "parameters": [
+                    {
+                        "name": "nombre",
+                        "in": "query",
+                        "description": "Filtrar por Nombre completo del docente.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de docentes obtenida exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombre_completo": {
+                                                "type": "string",
+                                                "example": "Carlos Garcia"
+                                            },
+                                            "telefono": {
+                                                "type": "string",
+                                                "example": "111-222-3333"
+                                            },
+                                            "correo_electronico": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "carlos.garcia@example.com"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Docentes"
+                ],
+                "summary": "Crea un nuevo docente.",
+                "operationId": "704947e2a274062348a0f56aaab046e0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "identification_number",
+                                    "gender",
+                                    "date_of_birth",
+                                    "phone",
+                                    "address",
+                                    "department",
+                                    "hire_date",
+                                    "emergency_contact_name",
+                                    "emergency_contact_phone",
+                                    "emergency_contact_email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Carlos"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Garcia"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "carlos.garcia@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    },
+                                    "identification_number": {
+                                        "type": "string",
+                                        "example": "987-654321-0"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1980-03-15"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "111-222-3333"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Avenida Siempre Viva 742"
+                                    },
+                                    "profile_image": {
+                                        "description": "Optional: Teacher's profile image",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "department": {
+                                        "type": "string",
+                                        "example": "Matemáticas"
+                                    },
+                                    "hire_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-08-01"
+                                    },
+                                    "salary": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": "50000.00"
+                                    },
+                                    "qualification": {
+                                        "type": "string",
+                                        "example": "PhD en Matemáticas"
+                                    },
+                                    "specialization": {
+                                        "type": "string",
+                                        "example": "Álgebra Lineal"
+                                    },
+                                    "office_location": {
+                                        "type": "string",
+                                        "example": "Edificio A, Oficina 201"
+                                    },
+                                    "emergency_contact_name": {
+                                        "type": "string",
+                                        "example": "Ana Garcia"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "type": "string",
+                                        "example": "555-987-6543"
+                                    },
+                                    "emergency_contact_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ana.garcia@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Docente creado exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Teacher created successfully"
+                                        },
+                                        "teacher": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_completo": {
+                                                    "type": "string",
+                                                    "example": "Carlos Garcia"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/docentes/{id}": {
+            "put": {
+                "tags": [
+                    "Docentes"
+                ],
+                "summary": "Actualiza un registro de docente.",
+                "operationId": "fca2f373c6b49bd51ba5cca51fb61c0a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del docente a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Carlos"
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Garcia"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "carlos.garcia@example.com"
+                                    },
+                                    "identification_number": {
+                                        "type": "string",
+                                        "example": "987-654321-0"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1980-03-15"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "111-222-3333"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Avenida Siempre Viva 742"
+                                    },
+                                    "profile_image": {
+                                        "description": "Optional: Teacher's profile image",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "department": {
+                                        "type": "string",
+                                        "example": "Matemáticas"
+                                    },
+                                    "hire_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-08-01"
+                                    },
+                                    "salary": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": "50000.00"
+                                    },
+                                    "qualification": {
+                                        "type": "string",
+                                        "example": "PhD en Matemáticas"
+                                    },
+                                    "specialization": {
+                                        "type": "string",
+                                        "example": "Álgebra Lineal"
+                                    },
+                                    "office_location": {
+                                        "type": "string",
+                                        "example": "Edificio A, Oficina 201"
+                                    },
+                                    "emergency_contact_name": {
+                                        "type": "string",
+                                        "example": "Ana Garcia"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "type": "string",
+                                        "example": "555-987-6543"
+                                    },
+                                    "emergency_contact_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ana.garcia@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Docente actualizado exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Teacher updated successfully"
+                                        },
+                                        "teacher": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre_completo": {
+                                                    "type": "string",
+                                                    "example": "Carlos Garcia"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Docente no encontrado."
+                    },
+                    "422": {
+                        "description": "Error de validación."
                     }
                 },
                 "security": [
@@ -1366,16 +2651,28 @@
     },
     "tags": [
         {
-            "name": "Authentication",
-            "description": "API endpoints for user authentication"
+            "name": "Asignaturas",
+            "description": "Gestión de materias académicas"
         },
         {
             "name": "Courses",
             "description": "API endpoints for course management"
         },
         {
-            "name": "Students",
-            "description": "API endpoints for student management"
+            "name": "Sesiones",
+            "description": "Gestión de grupos de clase o periodos lectivos"
+        },
+        {
+            "name": "Estudiantes",
+            "description": "Gestión de estudiantes"
+        },
+        {
+            "name": "Docentes",
+            "description": "Gestión de docentes"
+        },
+        {
+            "name": "Autenticación",
+            "description": "Autenticación"
         }
     ]
 }

@@ -14,6 +14,7 @@ class Attendance extends Model
     protected $fillable = [
         'student_id',
         'course_id',
+        'session_id',
         'teacher_id',
         'date',
         'status',
@@ -23,6 +24,14 @@ class Attendance extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    /**
+     * Get the session that owns the attendance record.
+     */
+    public function session()
+    {
+        return $this->belongsTo(Session::class);
+    }
 
     /**
      * Get the student that owns the attendance record.
